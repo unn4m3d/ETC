@@ -1,0 +1,18 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.4
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ETC", "ETC\ETC.csproj", "{0D6F1308-F518-4FAD-A655-BF21CD690B62}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0D6F1308-F518-4FAD-A655-BF21CD690B62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D6F1308-F518-4FAD-A655-BF21CD690B62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D6F1308-F518-4FAD-A655-BF21CD690B62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D6F1308-F518-4FAD-A655-BF21CD690B62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal

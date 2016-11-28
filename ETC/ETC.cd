@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<ClassDiagram Zoom="1" MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="ETC.MainForm" Collapsed="False">
+    <Position X="0.5" Y="4.5" Width="2.231037" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Interface Name="ETC.Conversations.IConversation" Collapsed="False">
+    <Position X="0.5" Y="7.9" Width="2.620602" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+    </Compartments>
+  </Interface>
+  <Interface Name="ETC.Users.IUser" Collapsed="False">
+    <Position X="0.5" Y="9.9" Width="2.815197" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+    </Compartments>
+  </Interface>
+  <Interface Name="ETC.Messages.IMessage" Collapsed="False">
+    <Position X="0.5" Y="11.8" Width="2.815197" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+    </Compartments>
+  </Interface>
+  <Class Name="ETC.Conversations.Chat" Collapsed="False">
+    <Position X="0.5" Y="13.7" Width="2.438039" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="ETC.Users.UserFactory" Collapsed="False">
+    <Position X="0.5" Y="15.8" Width="2.324494" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="ETC.Users.UnsupportedUser" Collapsed="False">
+    <Position X="0.5" Y="0.5" Width="2.353981" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="ETC.Users.EmptyUser" Collapsed="False">
+    <Position X="0.5" Y="2.6" Width="2.065607" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="ETC.Users.User" Collapsed="False">
+    <Position X="0.5" Y="17.4" Width="2.266432" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="ETC.DialogContainer" Collapsed="False">
+    <Position X="0.5" Y="19.9" Width="2.20692" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="ETC.Program" Collapsed="False">
+    <Position X="0.5" Y="21.7" Width="1.61422" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="ETC.LoginForm" Collapsed="False">
+    <Position X="0.5" Y="23.8" Width="2.32256" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Enum Name="ETC.AuthState" Collapsed="False">
+    <Position X="0.5" Y="28.1" Width="2.303634" />
+    <Compartments />
+  </Enum>
+  <Class Name="ETC.Conversations.PrivateChat" Collapsed="False">
+    <Position X="0.5" Y="29.7" Width="2.324064" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+      <Compartment Name="Fields" Collapsed="False" />
+    </Compartments>
+  </Class>
+  <Class Name="ETC.Conversations.ConversationFactory" Collapsed="False">
+    <Position X="0.5" Y="32.2" Width="1.78153" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="False" />
+    </Compartments>
+  </Class>
+</ClassDiagram>
