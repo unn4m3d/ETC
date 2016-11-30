@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using TeleSharp.TL.Messages;
 using TeleSharp.TL;
 using TeleSharp.TL.Channels;
 
@@ -40,6 +40,12 @@ namespace ETC.Users
 			{
 				return new UnsupportedUser();
 			}
+		}
+		
+		public static List<IUser> FromDialogs(TLAbsDialogs d)
+		{
+			var users = Conversations.ConversationFactory.GetUsers(d);
+			return users.lists.Select(x => FromUser(x)).ToList();
 		}
 	}
 }

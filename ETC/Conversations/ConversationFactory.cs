@@ -30,10 +30,7 @@ namespace ETC.Conversations
 			}
 			else if(type == typeof(TLChannel))
 			{
-				if((chat as TLChannel).megagroup)
-					return new Supergroup(chat as TLChannel);
-				else
-					return new Channel(chat as TLChannel);
+				return new Channel(chat as TLChannel);
 			}
 			else if(type == typeof(TLChatEmpty))
 			{

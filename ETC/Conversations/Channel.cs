@@ -89,5 +89,15 @@ namespace ETC.Conversations
 			return new DateTime((long)m_channel.date);
 		}
 		
+		public ConversationType Type
+		{
+			get
+			{
+				return m_channel.megagroup ?
+					ConversationType.Supergroup :
+					ConversationType.Channel;
+			}
+		}
+		
 	}
 }

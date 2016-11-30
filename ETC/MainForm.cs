@@ -16,8 +16,12 @@ using System.Linq;
 using TeleSharp.TL;
 using TeleSharp.TL.Contacts;
 using TeleSharp.TL.Messages;
+using TeleSharp.TL.Auth;
 using TLSharp.Core;
 using ETC.Conversations;
+using ETC.Users;
+using ETC.Peers;
+using PUser = ETC.Peers.User;
 
 namespace ETC
 {
@@ -28,15 +32,17 @@ namespace ETC
 	{
 		public TelegramClient Client;
 		public TreeNode All;
+		public ClientData Data;
 		
-		public Dictionary<Type,Color> Colors = new Dictionary<Type, Color>()
+		public Dictionary<ConversationType,Color> Colors = new Dictionary<ConversationType, Color>()
 		{
-			{typeof(PrivateChat),		Color.Blue},
-			{typeof(Channel),			Color.Green},
-			{typeof(EmptyChat),     	Color.DarkGray},
-			{typeof(UnsupportedChat),	Color.Red},
-			{typeof(Chat),				Color.Purple},
-			{typeof(Supergroup),		Color.HotPink}
+			{ConversationType.Empty,		Color.Black},
+			{ConversationType.Chat,			Color.Blue},
+			{ConversationType.Private, 		Color.SaddleBrown},
+			{ConversationType.Channel,  	Color.Green},
+			{ConversationType.Supergroup, 	Color.DarkViolet},
+			{ConversationType.Unsupported,  Color.Red},
+			{ConversationType.Bot, 			Color.Cyan}
 		};
 		
 		public List<IConversation> Conversations = new List<IConversation>(){};
@@ -48,6 +54,15 @@ namespace ETC
 			//
 			InitializeComponent();
 			Client = c;	
+			Data = new ClientData(c);
+			
+			var users = new TreeNode("Users");
+			var groups = new TreeNode("Groups");
+			var supergroups = new TreeNode("Supergroups");
+			var channels = new TreeNode("Channels");
+			var bots = new TreeNode("Bots");
+			
+			
 			var bw = new BackgroundWorker();
 			bw.DoWork += (sender,e) => {
 				try
@@ -55,7 +70,56 @@ namespace ETC
 					var s = sender as BackgroundWorker;
 					s.ReportProgress(0);
 					
-					Conversations = ConversationFactory.FromDialogs(Client.GetUserDialogsAsync().Result);
+					var req = new TLRequestGetDialogs()
+					{
+						offset_date = 0,
+						offset_peer = new TLInputPeerSelf(),
+						limit = 5000,
+					};
+					
+					var dialogs = Client.SendDebugRequestAsync<TLAbsDialogs>(req).Result;
+					s.ReportProgress(10);
+					Conversations = ConversationFactory.FromDialogs(dialogs);
+					s.ReportProgress(20);
+					Data.Users = UserFactory.FromDialogs(dialogs);
+					s.ReportProgress(30);
+					
+					for(int i = 0; i < Conversations.Count; i++)
+					{
+						var conv = Conversations[i];
+						var node = new TreeNode(conv.GetTitleAsync(Client).Result);
+						node.Tag = conv;
+						node.ForeColor = Colors[conv.Type];
+						switch(conv.Type)
+						{
+							case ConversationType.Bot:
+								bots.Nodes.Add(node);
+								break;
+							case ConversationType.Channel:
+								channels.Nodes.Add(node);
+								break;
+							case ConversationType.Chat:
+								groups.Nodes.Add(node);
+								break;
+							case ConversationType.Private:
+								users.Nodes.Add(node);
+								break;
+							case ConversationType.Supergroup:
+								supergroups.Nodes.Add(node);
+								break;
+						}
+						s.ReportProgress((90-30)*i/Conversations.Count + 30);
+					}
+					s.ReportProgress(90);
+					bots.Text += " (" + bots.Nodes.Count + ")";
+					s.ReportProgress(92);
+					channels.Text += " (" + channels.Nodes.Count + ")";
+					s.ReportProgress(94);
+					groups.Text += " (" + groups.Nodes.Count + ")";
+					s.ReportProgress(96);
+					users.Text += " (" + users.Nodes.Count + ")";
+					s.ReportProgress(98);
+					supergroups.Text += " (" + supergroups.Nodes.Count + ")";
 					s.ReportProgress(100);
 				}
 				catch(Exception ex)
@@ -85,15 +149,28 @@ namespace ETC
 					{
 						var node = new TreeNode(conv.GetTitleAsync(Client).Result);
 						node.Tag = conv;
-						node.ForeColor = Colors[conv.GetType()];
+						node.ForeColor = Colors[conv.Type];
 						All.Nodes.Add(node);
 					}
 					Chats.Nodes.Add(All);
+					Chats.Nodes.Add(bots);
+					Chats.Nodes.Add(channels);
+					Chats.Nodes.Add(groups);
+					Chats.Nodes.Add(supergroups);
+					Chats.Nodes.Add(users);
 				}
 				
 			};
 			bw.WorkerReportsProgress = true;
 			bw.RunWorkerAsync();
 		}
+		
+		void LogOutMenuItemClick(object sender, EventArgs e)
+		{
+			Debug.WriteLine("LogOut");
+			Client.SendDebugRequestAsync<TLAbsBool>(new TLRequestLogOut()).Wait();
+			Application.Exit();
+		}
+		
 	}
 }

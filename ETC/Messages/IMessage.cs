@@ -20,8 +20,8 @@ namespace ETC.Messages
 	public interface IMessage
 	{
 		Task<String> GetTextAsync(TelegramClient client);
-		Task<IUser> GetSenderAsync(TelegramClient client);
-		Task<IConversation> GetConversationAsync(TelegramClient client);
+		Task<IUser> GetSenderAsync(ClientData cli);
+		Task<IConversation> GetConversationAsync(ClientData cli);
 		int SequenceNumber();
 	}
 }

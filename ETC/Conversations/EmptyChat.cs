@@ -35,5 +35,13 @@ namespace ETC.Conversations
 		{
 			return m_chat.id;
 		}
+		
+		public override ConversationType Type
+		{
+			get
+			{
+				return ConversationType.Empty;
+			}
+		}
 	}
 }

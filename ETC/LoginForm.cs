@@ -122,7 +122,7 @@ namespace ETC
 							TheMainForm.Show();
 							Debug.WriteLine("Try block escape");
 						}
-						catch(CloudPasswordNeededException ex)
+						catch(CloudPasswordNeededException)
 						{
 							Debug.WriteLine("Catch block entered");
 							PasswordData = Client.GetPasswordSetting();

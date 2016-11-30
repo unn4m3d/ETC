@@ -71,5 +71,15 @@ namespace ETC.Conversations
 		{
 			return new DateTime(0L);
 		}
+		
+		public ConversationType Type
+		{
+			get
+			{
+				return m_user.bot ?
+					ConversationType.Bot :
+					ConversationType.Private;
+			}
+		}
 	}
 }

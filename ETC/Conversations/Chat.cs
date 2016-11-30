@@ -81,12 +81,20 @@ namespace ETC.Conversations
 		
 		public async Task<long> GetAccessHashAsync()
 		{
-			return 0l;
+			return 0L;
 		}
 		
 		public async Task<DateTime> GetLastTimeAsync(TelegramClient cli)
 		{
 			return new DateTime((long)m_chat.date);
+		}
+		
+		public ConversationType Type
+		{
+			get
+			{
+				return ConversationType.Chat;
+			}
 		}
 	}
 }
