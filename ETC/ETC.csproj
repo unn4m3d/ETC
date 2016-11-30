@@ -70,6 +70,7 @@
     <Compile Include="Conversations\ConversationFactory.cs" />
     <Compile Include="Conversations\EmptyChat.cs" />
     <Compile Include="Conversations\PrivateChat.cs" />
+    <Compile Include="Conversations\Supergroup.cs" />
     <Compile Include="Conversations\UnsupportedChat.cs" />
     <Compile Include="Conversations\IConversation.cs" />
     <Compile Include="LoginForm.cs" />

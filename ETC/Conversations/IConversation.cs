@@ -27,5 +27,6 @@ namespace ETC.Conversations
 		Task WriteMessageAsync(TelegramClient client, String msg);
 		Task<int> GetIdAsync();
 		Task<long> GetAccessHashAsync();
+		Task<DateTime> GetLastTimeAsync(TelegramClient cli);
 	}
 }

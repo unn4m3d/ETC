@@ -71,9 +71,9 @@ namespace ETC.Conversations
 			return m_channel.access_hash ?? 0;
 		}
 		
-		public async Task WriteMessageAsync(TelegramClient cli, string msg)
+		public virtual async Task WriteMessageAsync(TelegramClient cli, string msg)
 		{
-			await cli.SendMessageAsync(new TLInputPeerChannel(){access_hash = m_channel.access_hash ?? 0,channel_id=m_channel.id},msg);		
+			// await cli.SendMessageAsync(new TLInputPeerChannel(){access_hash = m_channel.access_hash ?? 0,channel_id=m_channel.id},msg);		
 		}
 		
 		public async Task<String> GetLinkAsync(TelegramClient cli)
@@ -82,6 +82,11 @@ namespace ETC.Conversations
 				return "";
 			else
 				return "https://telegram.me/" + m_channel.username.Trim().Replace("@","");
+		}
+		
+		public async Task<DateTime> GetLastTimeAsync(TelegramClient cli)
+		{
+			return new DateTime((long)m_channel.date);
 		}
 		
 	}

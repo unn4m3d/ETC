@@ -58,5 +58,10 @@ namespace ETC.Conversations
 		{
 			return 0l;
 		}
+		
+		public async Task<DateTime> GetLastTimeAsync(TelegramClient cli)
+		{
+			return new DateTime(0l);
+		}
 	}
 }

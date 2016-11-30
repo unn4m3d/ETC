@@ -66,5 +66,10 @@ namespace ETC.Conversations
 		{
 			return m_user.access_hash ?? 0;
 		}
+		
+		public async Task<DateTime> GetLastTimeAsync(TelegramClient cli)
+		{
+			return new DateTime(0L);
+		}
 	}
 }

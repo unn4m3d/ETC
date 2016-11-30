@@ -40,8 +40,7 @@ namespace ETC
 			this.Status = new System.Windows.Forms.StatusStrip();
 			this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-			this.ChatsView = new System.Windows.Forms.ListView();
-			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
+			this.Chats = new System.Windows.Forms.TreeView();
 			this.Status.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
@@ -80,27 +79,18 @@ namespace ETC
 			// 
 			// splitContainer1.Panel1
 			// 
-			this.splitContainer1.Panel1.Controls.Add(this.ChatsView);
+			this.splitContainer1.Panel1.Controls.Add(this.Chats);
 			this.splitContainer1.Size = new System.Drawing.Size(704, 374);
 			this.splitContainer1.SplitterDistance = 121;
 			this.splitContainer1.TabIndex = 2;
 			// 
-			// ChatsView
+			// Chats
 			// 
-			this.ChatsView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-									this.columnHeader1});
-			this.ChatsView.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.ChatsView.GridLines = true;
-			this.ChatsView.Location = new System.Drawing.Point(0, 0);
-			this.ChatsView.Name = "ChatsView";
-			this.ChatsView.Size = new System.Drawing.Size(121, 374);
-			this.ChatsView.TabIndex = 0;
-			this.ChatsView.UseCompatibleStateImageBehavior = false;
-			this.ChatsView.View = System.Windows.Forms.View.Details;
-			// 
-			// columnHeader1
-			// 
-			this.columnHeader1.Text = "Chats";
+			this.Chats.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.Chats.Location = new System.Drawing.Point(0, 0);
+			this.Chats.Name = "Chats";
+			this.Chats.Size = new System.Drawing.Size(121, 374);
+			this.Chats.TabIndex = 0;
 			// 
 			// MainForm
 			// 
@@ -120,9 +110,8 @@ namespace ETC
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
-		private System.Windows.Forms.ColumnHeader columnHeader1;
+		private System.Windows.Forms.TreeView Chats;
 		private System.Windows.Forms.ToolStripStatusLabel StatusLabel;
-		private System.Windows.Forms.ListView ChatsView;
 		private System.Windows.Forms.SplitContainer splitContainer1;
 		private System.Windows.Forms.StatusStrip Status;
 		private System.Windows.Forms.ToolStrip MainToolBar;

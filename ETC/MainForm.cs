@@ -27,26 +27,19 @@ namespace ETC
 	public partial class MainForm : Form
 	{
 		public TelegramClient Client;
+		public TreeNode All;
 		
-		
-		public List<IConversation> conversations = new List<IConversation>(){};
-		private List<String> titles = new List<String>(){};
-		
-		internal TLVector<TLAbsUser> GetUsers(TLAbsDialogs d)
+		public Dictionary<Type,Color> Colors = new Dictionary<Type, Color>()
 		{
-			if(typeof(TLDialogs) == d.GetType())
-				return (d as TLDialogs).users;
-			else
-				return (d as TLDialogsSlice).users;
-		}
+			{typeof(PrivateChat),		Color.Blue},
+			{typeof(Channel),			Color.Green},
+			{typeof(EmptyChat),     	Color.DarkGray},
+			{typeof(UnsupportedChat),	Color.Red},
+			{typeof(Chat),				Color.Purple},
+			{typeof(Supergroup),		Color.HotPink}
+		};
 		
-		internal TLVector<TLAbsChat> GetChats(TLAbsDialogs d)
-		{
-			if(typeof(TLDialogs) == d.GetType())
-				return (d as TLDialogs).chats;
-			else
-				return (d as TLDialogsSlice).chats;
-		}
+		public List<IConversation> Conversations = new List<IConversation>(){};
 		
 		public MainForm(TelegramClient c)
 		{
@@ -62,27 +55,7 @@ namespace ETC
 					var s = sender as BackgroundWorker;
 					s.ReportProgress(0);
 					
-					var r = Client.GetUserDialogsAsync().Result;
-					
-					//var users = GetUsers(r).lists;
-					var chats = GetChats(r).lists;
-					
-				
-					/*for(int i = 0; i < users.Count; i++)
-					{
-						var current = ConversationFactory.FromUser(users[i]);
-						titles.Add(current.GetTitleAsync(Client).Result);
-						conversations.Add(current);
-						s.ReportProgress(50*i/users.Count);
-					}*/
-					
-					for(int i = 0; i < chats.Count; i++)
-					{
-						var current = ConversationFactory.FromChat(chats[i]);
-						titles.Add(current.GetTitleAsync(Client).Result);
-						conversations.Add(current);
-						s.ReportProgress(50*i/chats.Count + 50);
-					}
+					Conversations = ConversationFactory.FromDialogs(Client.GetUserDialogsAsync().Result);
 					s.ReportProgress(100);
 				}
 				catch(Exception ex)
@@ -106,9 +79,16 @@ namespace ETC
 				}
 				else
 				{
+					All = new TreeNode("All (" + Conversations.Count + ")");
 					StatusLabel.Text = "Done";
-					foreach(var t in titles)
-						ChatsView.Items.Add(t);
+					foreach(var conv in Conversations)
+					{
+						var node = new TreeNode(conv.GetTitleAsync(Client).Result);
+						node.Tag = conv;
+						node.ForeColor = Colors[conv.GetType()];
+						All.Nodes.Add(node);
+					}
+					Chats.Nodes.Add(All);
 				}
 				
 			};

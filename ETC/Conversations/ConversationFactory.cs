@@ -8,7 +8,10 @@
  */
 using System;
 using TeleSharp.TL;
+using TeleSharp.TL.Messages;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
 using ETC.Users;
 
 namespace ETC.Conversations
@@ -27,7 +30,10 @@ namespace ETC.Conversations
 			}
 			else if(type == typeof(TLChannel))
 			{
-				return new Channel(chat as TLChannel);
+				if((chat as TLChannel).megagroup)
+					return new Supergroup(chat as TLChannel);
+				else
+					return new Channel(chat as TLChannel);
 			}
 			else if(type == typeof(TLChatEmpty))
 			{
@@ -52,6 +58,32 @@ namespace ETC.Conversations
 				Debug.WriteLine("Unsupported user conv type : {0}.{1}",type.Namespace,type.Name);
 				return new UnsupportedChat();
 			}
+		}
+		
+		internal static TLVector<TLAbsUser> GetUsers(TLAbsDialogs d)
+		{
+			if(typeof(TLDialogs) == d.GetType())
+				return (d as TLDialogs).users;
+			else
+				return (d as TLDialogsSlice).users;
+		}
+		
+		internal static TLVector<TLAbsChat> GetChats(TLAbsDialogs d)
+		{
+			if(typeof(TLDialogs) == d.GetType())
+				return (d as TLDialogs).chats;
+			else
+				return (d as TLDialogsSlice).chats;
+		}
+		
+		public static List<IConversation> FromDialogs(TLAbsDialogs d, bool exclude_users = false)
+		{
+			var items = GetChats(d).lists.Select(x => FromChat(x)).ToList();
+			if(!exclude_users)
+			{
+				items.AddRange(GetUsers(d).lists.Select(x => FromUser(x)));
+			}
+			return items;
 		}
 	}
 }
