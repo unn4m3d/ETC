@@ -83,6 +83,7 @@ namespace ETC.Conversations
 			Debug.WriteLine("AccessHash is {0} ({1})",hash,m_channel.access_hash);
 			Debug.WriteLine("Message is {0} [{1}]",msg,msg.Length);
 			new Task(new Action(() => cli.SendMessageAsync(peer,msg))).Start();
+			//await cli.SendMessageAsync(peer,msg);
 			Debug.WriteLine("After send");
 		}
 		
