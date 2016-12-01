@@ -35,6 +35,7 @@ namespace ETC
 		public TelegramClient Client;
 		public TreeNode All;
 		public ClientData Data;
+		public IConversation Current;
 		
 		public Dictionary<ConversationType,Color> Colors = new Dictionary<ConversationType, Color>()
 		{
@@ -75,17 +76,25 @@ namespace ETC
 					var req = new TLRequestGetDialogs()
 					{
 						offset_date = 0,
-						offset_peer = new TLInputPeerSelf(),
 						limit = 5000,
+						offset_peer = new TLInputPeerEmpty()
 					};
+					try
+					{
+						var dialogs = Client.SendDebugRequestAsync<TLAbsDialogs>(req).Result;
+						s.ReportProgress(10);
+						Conversations = ConversationFactory.FromDialogs(dialogs);
+						Data.Conversations = Conversations;
+						s.ReportProgress(20);
+						Data.Users = UserFactory.FromDialogs(dialogs);
+						s.ReportProgress(30);
+					}
+					catch(Exception ex)
+					{
+						Debug.WriteLine(ex.StackTrace);
+						Debug.WriteLine(ex.Message);
+					}
 					
-					var dialogs = Client.SendDebugRequestAsync<TLAbsDialogs>(req).Result;
-					s.ReportProgress(10);
-					Conversations = ConversationFactory.FromDialogs(dialogs);
-					Data.Conversations = Conversations;
-					s.ReportProgress(20);
-					Data.Users = UserFactory.FromDialogs(dialogs);
-					s.ReportProgress(30);
 					
 					for(int i = 0; i < Conversations.Count; i++)
 					{
@@ -197,6 +206,7 @@ namespace ETC
 				}
 				Debug.WriteLine("");
 				ChatBox.ScrollToCaret();
+				Current = conv;
 			};
 			
 			bw.ProgressChanged += (sender, e) => {
@@ -219,6 +229,16 @@ namespace ETC
 			if(e.Node.Tag != null && e.Node.Tag is IConversation)
 			{
 				OpenConversation(e.Node.Tag as IConversation);
+			}
+		}
+		
+		void InputKeyUp(object sender, KeyEventArgs e)
+		{
+			Debug.WriteLine("OnKeyUp {0}",e.KeyCode.ToString());
+			if(e.KeyCode == Keys.Return)
+			{
+				Current.WriteMessageAsync(Client,InputBox.Text).Wait();
+				InputBox.Text = "";
 			}
 		}
 	}

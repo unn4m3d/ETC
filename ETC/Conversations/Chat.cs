@@ -110,7 +110,9 @@ namespace ETC.Conversations
 				offset_id = offset,
 				limit = count
 			};
-			return MessageFactory.FromMessages(await cli.Client.SendDebugRequestAsync<TLAbsMessages>(req));
+			var res = await cli.Client.SendDebugRequestAsync<TLAbsMessages>(req);
+			cli.AddUsers(UserFactory.FromMessages(res));
+			return MessageFactory.FromMessages(res);
 		}
 	}
 }

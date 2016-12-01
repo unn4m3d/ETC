@@ -64,7 +64,7 @@ namespace ETC.Conversations
 		
 		public async Task<long> GetAccessHashAsync()
 		{
-			return m_user.access_hash ?? 0;
+			return m_user.access_hash.Value;
 		}
 		
 		public async Task<DateTime> GetLastTimeAsync(TelegramClient cli)
@@ -94,7 +94,9 @@ namespace ETC.Conversations
 				offset_id = offset,
 				limit = count
 			};
-			return MessageFactory.FromMessages(await cli.Client.SendDebugRequestAsync<TLAbsMessages>(req));
+			var res = await cli.Client.SendDebugRequestAsync<TLAbsMessages>(req);
+			cli.AddUsers(UserFactory.FromMessages(res));
+			return MessageFactory.FromMessages(res);
 		}
 	}
 }

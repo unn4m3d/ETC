@@ -72,12 +72,18 @@ namespace ETC.Conversations
 		
 		public async Task<long> GetAccessHashAsync()
 		{
-			return m_channel.access_hash ?? 0;
+			return m_channel.access_hash.Value;
 		}
 		
-		public virtual async Task WriteMessageAsync(TelegramClient cli, string msg)
+		public async Task WriteMessageAsync(TelegramClient cli, string msg)
 		{
-			// await cli.SendMessageAsync(new TLInputPeerChannel(){access_hash = m_channel.access_hash ?? 0,channel_id=m_channel.id},msg);		
+			Debug.WriteLine("Before send");
+			var hash = await GetAccessHashAsync();
+			var peer = new TLInputPeerChannel(){access_hash = hash,channel_id=m_channel.id};
+			Debug.WriteLine("AccessHash is {0} ({1})",hash,m_channel.access_hash);
+			Debug.WriteLine("Message is {0} [{1}]",msg,msg.Length);
+			new Task(new Action(() => cli.SendMessageAsync(peer,msg))).Start();
+			Debug.WriteLine("After send");
 		}
 		
 		public async Task<String> GetLinkAsync(TelegramClient cli)
@@ -121,6 +127,7 @@ namespace ETC.Conversations
 			Debug.WriteLine("Received messages");
 			var m = MessageFactory.FromMessages(res);
 			Debug.WriteLine("Total {0}",m.Count);
+			cli.AddUsers(UserFactory.FromMessages(res));
 			return m;
 		}
 		

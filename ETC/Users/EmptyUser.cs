@@ -26,16 +26,16 @@ namespace ETC.Users
 			m_id = u.id;
 		}
 		
-		public override Task<String> GetFirstNameAsync(TelegramClient c)
+		public override async Task<String> GetFirstNameAsync(TelegramClient c)
 		{
-			return new Task<String>(
+			return await new Task<String>(
 				()=>"[EMPTY : " + m_id + "]"
 			);
 		}
 		
-		public override Task<int> GetIdAsync()
+		public override async Task<int> GetIdAsync()
 		{
-			return new Task<int>(()=>m_id);
+			return await new Task<int>(()=>m_id);
 		}
 	
 	}

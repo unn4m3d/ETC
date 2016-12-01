@@ -38,7 +38,6 @@ namespace ETC.Messages
 		
 		public async Task<IUser> GetSenderAsync(ClientData cli)
 		{
-			Debug.WriteLine("Getting Sender");
 			var uid = m_msg.from_id ?? PeerFactory.FromPeer(m_msg.to_id).Id;
 			if(cli.UsersDict.ContainsKey(uid))
 				return cli.UsersDict[uid];
@@ -67,14 +66,12 @@ namespace ETC.Messages
 		
 		public void WriteToRichTextBox(RichTextBox box, ClientData cli)
 		{
-			Debug.WriteLine("Writing...");
 			box.SelectionColor = Color.Blue;
 			box.SelectionFont = new Font(box.Font,FontStyle.Bold);
 			box.AppendText("<"+m_sender+"> ");
 			box.SelectionColor = Color.Black;
 			box.SelectionFont = box.Font;
 			box.AppendText(m_text + "\n");
-			Debug.WriteLine("Wrote");
 		}
 		
 		public int SequenceNumber()

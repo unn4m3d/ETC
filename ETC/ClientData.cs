@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using ETC.Conversations;
 using ETC.Users;
 using TLSharp.Core;
+using System.Linq;
 
 namespace ETC
 {
@@ -41,6 +42,19 @@ namespace ETC
 		public ClientData(TelegramClient c)
 		{
 			Client = c;
+		}
+		
+		public void AddUsers(List<IUser> users)
+		{
+			foreach(var u in users)
+			{
+				var id = u.GetIdAsync().Result;
+				if(!UsersDict.ContainsKey(id))
+				{					
+					UsersDict.Add(id,u);
+					m_users.Add(u);
+				}
+			}
 		}
 	}
 }
