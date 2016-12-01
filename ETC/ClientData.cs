@@ -8,6 +8,7 @@
  */
 using System;
 using System.Collections.Generic;
+using ETC.Conversations;
 using ETC.Users;
 using TLSharp.Core;
 
@@ -18,7 +19,23 @@ namespace ETC
 	/// </summary>
 	public class ClientData
 	{
-		public List<IUser> Users;
+		List<IUser> m_users;
+		public List<IUser> Users
+		{
+			get{
+				return m_users;
+			}
+			set{
+				m_users = value;
+				UsersDict = new Dictionary<int, IUser>(){};
+				foreach(var v in value)
+				{
+					UsersDict.Add(v.GetIdAsync().Result,v);
+				}
+			}
+		}
+		public List<IConversation> Conversations;
+		public Dictionary<int,IUser> UsersDict;
 		public TelegramClient Client;
 		
 		public ClientData(TelegramClient c)

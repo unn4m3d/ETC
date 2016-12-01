@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using ETC.Messages;
 using ETC.Users;
 using TeleSharp.TL;
 using TeleSharp.TL.Messages;
@@ -80,6 +80,21 @@ namespace ETC.Conversations
 					ConversationType.Bot :
 					ConversationType.Private;
 			}
+		}
+		
+		public async Task<List<IMessage>> GetLastMessagesAsync(ClientData cli, int offset, int count)
+		{
+			var req = new TLRequestGetHistory()
+			{
+				peer = new TLInputPeerUser()
+				{
+					user_id = m_user.id,
+					access_hash = m_user.access_hash ?? 0
+				},
+				offset_id = offset,
+				limit = count
+			};
+			return MessageFactory.FromMessages(await cli.Client.SendDebugRequestAsync<TLAbsMessages>(req));
 		}
 	}
 }

@@ -12,9 +12,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
+using ETC.Messages;
 using ETC.Users;
 using TeleSharp.TL;
 using TeleSharp.TL.Channels;
+using TeleSharp.TL.Messages;
 using TLSharp.Core;
 
 namespace ETC.Conversations
@@ -95,6 +97,20 @@ namespace ETC.Conversations
 			{
 				return ConversationType.Chat;
 			}
+		}
+		
+		public async Task<List<IMessage>> GetLastMessagesAsync(ClientData cli, int offset, int count)
+		{
+			var req = new TLRequestGetHistory()
+			{
+				peer = new TLInputPeerChat()
+				{
+					chat_id = m_chat.id,
+				},
+				offset_id = offset,
+				limit = count
+			};
+			return MessageFactory.FromMessages(await cli.Client.SendDebugRequestAsync<TLAbsMessages>(req));
 		}
 	}
 }

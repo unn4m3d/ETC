@@ -24,7 +24,7 @@ namespace ETC.Peers
 			var type = peer.GetType();
 			if(type == typeof(TLPeerUser))
 			{
-				return new User((peer as TLPeerUser).user_id, ConversationType.Private);
+				return new PeerUser((peer as TLPeerUser).user_id, ConversationType.Private);
 			}
 			else
 			{

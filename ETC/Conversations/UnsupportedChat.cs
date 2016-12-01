@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using ETC.Messages;
 using ETC.Users;
 using TLSharp.Core;
 
@@ -70,6 +71,11 @@ namespace ETC.Conversations
 			{
 				return ConversationType.Unsupported;
 			}
+		}
+		
+		public async Task<List<IMessage>> GetLastMessagesAsync(ClientData cli, int offset,int count)
+		{
+			return new List<IMessage>(){};
 		}
 	}
 }

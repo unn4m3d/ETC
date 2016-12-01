@@ -83,11 +83,15 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Messages\IMessage.cs" />
-    <None Include="Messages\Message.cs" />
+    <Compile Include="Messages\Message.cs" />
+    <Compile Include="Messages\MessageFactory.cs" />
+    <Compile Include="Messages\UnsupportedMessage.cs" />
     <Compile Include="Peers\IPeer.cs" />
+    <Compile Include="Peers\PeerChannel.cs" />
+    <Compile Include="Peers\PeerChat.cs" />
     <Compile Include="Peers\PeerFactory.cs" />
     <Compile Include="Peers\UnsupportedPeer.cs" />
-    <Compile Include="Peers\User.cs" />
+    <Compile Include="Peers\PeerUser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TelegramClientExtension.cs" />

@@ -17,7 +17,7 @@ namespace ETC.Peers
 	/// <summary>
 	/// Description of User.
 	/// </summary>
-	public class User : IPeer
+	public class PeerUser : IPeer
 	{
 		public int Id{get; protected set;}
 		public ConversationType Type
@@ -26,7 +26,7 @@ namespace ETC.Peers
 			protected set;
 		}
 		
-		public User(int id, ConversationType type = ConversationType.Private)
+		public PeerUser(int id, ConversationType type = ConversationType.Private)
 		{
 			Id = id;
 			Type = type;
@@ -50,7 +50,7 @@ namespace ETC.Peers
 			};
 			
 			
-			var res = await cli.Client.SendRequestAsync<TLVector<TLAbsUser>>(req);
+			var res = await cli.Client.SendDebugRequestAsync<TLVector<TLAbsUser>>(req);
 			return ConversationFactory.FromUser(res.lists[0]);
 			
 		}

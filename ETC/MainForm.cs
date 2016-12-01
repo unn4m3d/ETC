@@ -11,17 +11,19 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Windows.Forms;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+using ETC.Conversations;
+using ETC.Peers;
+using ETC.Users;
+using ETC.Messages;
 using TeleSharp.TL;
+using TeleSharp.TL.Auth;
 using TeleSharp.TL.Contacts;
 using TeleSharp.TL.Messages;
-using TeleSharp.TL.Auth;
 using TLSharp.Core;
-using ETC.Conversations;
-using ETC.Users;
-using ETC.Peers;
-using PUser = ETC.Peers.User;
 
 namespace ETC
 {
@@ -80,6 +82,7 @@ namespace ETC
 					var dialogs = Client.SendDebugRequestAsync<TLAbsDialogs>(req).Result;
 					s.ReportProgress(10);
 					Conversations = ConversationFactory.FromDialogs(dialogs);
+					Data.Conversations = Conversations;
 					s.ReportProgress(20);
 					Data.Users = UserFactory.FromDialogs(dialogs);
 					s.ReportProgress(30);
@@ -165,6 +168,44 @@ namespace ETC
 			bw.RunWorkerAsync();
 		}
 		
+		void OpenConversation(IConversation conv)
+		{
+			var bw = new BackgroundWorker();
+			bw.WorkerReportsProgress = true;
+			var m = new List<IMessage>(){};
+			bw.DoWork += (sender,e) => {
+				m =  conv.GetLastMessagesAsync(Data,0,50).Result;
+				var s = sender as BackgroundWorker;
+				s.ReportProgress(10);
+				m.Reverse();
+				s.ReportProgress(25);
+				for(int i = 0; i < m.Count; i++)
+				{
+					m[i].PrepareForWritingAsync(Data).Wait();
+					s.ReportProgress((100-25)*i/m.Count + 25);
+				}
+				s.ReportProgress(100);
+			};
+			Status.Text = "Loading...";
+			bw.RunWorkerCompleted += (sender,e) => {
+				Status.Text = "Done";
+				ChatBox.Text  ="";
+				foreach(var msg in m)
+				{
+					Debug.Write(".");
+					msg.WriteToRichTextBox(ChatBox,Data);
+				}
+				Debug.WriteLine("");
+				ChatBox.ScrollToCaret();
+			};
+			
+			bw.ProgressChanged += (sender, e) => {
+				Status.Text = "Loading " + e.ProgressPercentage + "%";
+			};
+			
+			bw.RunWorkerAsync();
+		}
+		
 		void LogOutMenuItemClick(object sender, EventArgs e)
 		{
 			Debug.WriteLine("LogOut");
@@ -172,5 +213,13 @@ namespace ETC
 			Application.Exit();
 		}
 		
+		
+		void ChatsAfterSelect(object sender, TreeViewEventArgs e)
+		{
+			if(e.Node.Tag != null && e.Node.Tag is IConversation)
+			{
+				OpenConversation(e.Node.Tag as IConversation);
+			}
+		}
 	}
 }

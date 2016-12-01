@@ -11,6 +11,7 @@ using ETC.Conversations;
 using ETC.Users;
 using System.Threading.Tasks;
 using TLSharp.Core;
+using System.Windows.Forms;
 
 namespace ETC.Messages
 {
@@ -19,9 +20,11 @@ namespace ETC.Messages
 	/// </summary>
 	public interface IMessage
 	{
-		Task<String> GetTextAsync(TelegramClient client);
+		Task<String> GetTextAsync(ClientData client);
+		void WriteToRichTextBox(RichTextBox t, ClientData cli);
 		Task<IUser> GetSenderAsync(ClientData cli);
 		Task<IConversation> GetConversationAsync(ClientData cli);
 		int SequenceNumber();
+		Task PrepareForWritingAsync(ClientData cli);
 	}
 }

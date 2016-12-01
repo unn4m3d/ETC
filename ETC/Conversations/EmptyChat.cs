@@ -9,7 +9,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-
+using ETC.Messages;
+using System.Collections.Generic;
 using TeleSharp.TL;
 using TLSharp.Core;
 
@@ -42,6 +43,11 @@ namespace ETC.Conversations
 			{
 				return ConversationType.Empty;
 			}
+		}
+		
+		public async Task<List<IMessage>> GetLastMessagesAsync(ClientData cli, int offset,int count)
+		{
+			return new List<IMessage>(){};
 		}
 	}
 }

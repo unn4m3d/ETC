@@ -7,13 +7,17 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using ETC.Users;
-using System.Threading.Tasks;
-using TeleSharp.TL;
-using TeleSharp.TL.Channels;
-using TLSharp.Core;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+
+using ETC.Messages;
+using ETC.Users;
+using TeleSharp.TL;
+using TeleSharp.TL.Channels;
+using TeleSharp.TL.Messages;
+using TLSharp.Core;
+using System.Diagnostics;
 
 namespace ETC.Conversations
 {
@@ -97,6 +101,27 @@ namespace ETC.Conversations
 					ConversationType.Supergroup :
 					ConversationType.Channel;
 			}
+		}
+		
+		public async Task<List<IMessage>> GetLastMessagesAsync(ClientData cli, int offset, int count)
+		{
+			var req = new TLRequestGetHistory()
+			{
+				peer = new TLInputPeerChannel()
+				{
+					channel_id = m_channel.id,
+					access_hash = m_channel.access_hash ?? 0
+				},
+				offset_id = offset,
+				limit = count,
+				max_id = -1,
+				min_id = -1
+			};
+			var res = await cli.Client.SendDebugRequestAsync<TLAbsMessages>(req);
+			Debug.WriteLine("Received messages");
+			var m = MessageFactory.FromMessages(res);
+			Debug.WriteLine("Total {0}",m.Count);
+			return m;
 		}
 		
 	}

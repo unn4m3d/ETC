@@ -28,6 +28,7 @@ namespace ETC.Conversations
 		Task<int> GetIdAsync();
 		Task<long> GetAccessHashAsync();
 		Task<DateTime> GetLastTimeAsync(TelegramClient cli);
+		Task<List<IMessage>> GetLastMessagesAsync(ClientData cli, int offset,int count);
 		ConversationType Type{get;}
 	}
 }
