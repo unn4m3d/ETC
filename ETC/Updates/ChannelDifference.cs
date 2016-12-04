@@ -13,6 +13,7 @@ using ETC.Users;
 using ETC.Conversations;
 using ETC.Messages;
 using System.Linq;
+using System.Diagnostics;
 
 namespace ETC.Updates
 {
@@ -40,6 +41,7 @@ namespace ETC.Updates
 		
 		public List<IMessage> GetMessages()
 		{
+			Debug.WriteLine("Messages count : " + m_diff.new_messages.lists.Count);
 			return m_diff.new_messages.lists.Select(x => MessageFactory.FromMessage(x)).ToList();
 		}
 		

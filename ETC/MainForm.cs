@@ -207,6 +207,7 @@ namespace ETC
 								new TLRequestGetChannelDifference()
 								{
 									pts = CurrentState.pts,
+									limit = -1,
 									channel = new TLInputChannel()
 									{
 										channel_id = await cc.GetIdAsync(),
@@ -216,7 +217,10 @@ namespace ETC
 								}
 							);
 							Debug.WriteLine("Adding messages");
-							messages.AddRange(diff.GetMessages());
+							var cdo = DifferenceFactory.FromChannelDifference(cdiff);
+							var cmsg = cdo.GetMessages();
+							Debug.WriteLine(cmsg.Count);
+							messages.AddRange(cmsg);
 						}
 					}
 					

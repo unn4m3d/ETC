@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Diagnostics;
 using TeleSharp.TL.Updates;
 
 namespace ETC.Updates
@@ -28,6 +29,7 @@ namespace ETC.Updates
 		
 		public static IDifference FromChannelDifference(TLAbsChannelDifference diff)
 		{
+			Debug.WriteLine("{0} [isEmpty:{1} {2}]",diff.GetType().Name,diff is TLChannelDifferenceEmpty,diff.Constructor);
 			if(diff is TLChannelDifference)
 				return new ChannelDifference(diff as TLChannelDifference);
 			else if(diff is TLChannelDifferenceTooLong)
