@@ -16,19 +16,10 @@ namespace ETC.Updates
 	/// </summary>
 	public class State
 	{
-		public int Pts{get;protected set;}
-		public int Qts{get;protected set;}
-		public int Date{get;protected set;}
-		public State(int pts, int qts, int date)
+		public TLState Data;
+		public State(TLState s)
 		{
-			Date = date;
-			Pts = pts;
-			Qts = qts;
-		}
-		
-		public TLState GetState()
-		{
-			return new TLState(){qts = Qts, pts = Pts};
+			Data = s;
 		}
 	}
 }

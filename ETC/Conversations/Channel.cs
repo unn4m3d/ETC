@@ -91,7 +91,7 @@ namespace ETC.Conversations
 				random_id = TLSharp.Core.Utils.Helpers.GenerateRandomLong()
 			};
 			new Task(new Action(() => {
-			                    	cli.SendDebugRequestAsync<TLUpdates>(req);
+			                    	cli.SendDebugRequestAsync<object>(req).Wait();
 			                    })).Start();
 			/**/			
 			//await cli.SendMessageAsync(peer,msg);

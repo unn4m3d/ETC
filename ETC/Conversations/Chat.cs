@@ -75,7 +75,19 @@ namespace ETC.Conversations
 		
 		public async Task WriteMessageAsync(TelegramClient cli, String msg)
 		{
-			await cli.SendMessageAsync(new TLInputPeerChat(){chat_id = m_chat.id},msg);
+			var peer = new TLInputPeerChat()
+			{
+				chat_id = m_chat.id
+			};
+			var req = new TLRequestSendMessage()
+			{
+				peer = peer,
+				message = msg,
+				random_id = TLSharp.Core.Utils.Helpers.GenerateRandomLong()
+			};
+			new Task(new Action(() => {
+			                    	cli.SendDebugRequestAsync<object>(req).Wait();
+			                    })).Start();
 		}
 		
 		public async Task<int> GetIdAsync()

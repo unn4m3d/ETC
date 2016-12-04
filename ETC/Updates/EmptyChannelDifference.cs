@@ -41,5 +41,10 @@ namespace ETC.Updates
 		{
 			m_diff = d;
 		}
+		
+		public State GetState()
+		{
+			return null;
+		}
 	}
 }

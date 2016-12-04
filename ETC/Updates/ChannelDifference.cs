@@ -42,5 +42,17 @@ namespace ETC.Updates
 		{
 			return m_diff.new_messages.lists.Select(x => MessageFactory.FromMessage(x)).ToList();
 		}
+		
+		public State GetState()
+		{
+			return new State(
+				new TLState()
+				{
+			    	pts = m_diff.pts,
+					qts = 0,
+					seq = 0					
+			    }
+			);
+		}
 	}
 }

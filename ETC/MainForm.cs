@@ -61,7 +61,7 @@ namespace ETC
 		{
 			foreach(var node in Chats.Nodes)
 			{
-				Debug.WriteLine("Updating {0} {1}",node.GetType().Name,(node as TreeNode).Text);
+				//Debug.WriteLine("Updating {0} {1}",node.GetType().Name,(node as TreeNode).Text);
 				try
 				{
 					var nodes = Data.Conversations.Select(
@@ -69,10 +69,12 @@ namespace ETC
 							var n = new TreeNode(x.GetTitleAsync(Data.Client).Result);
 							n.Tag = x; 
 							n.ForeColor = Colors[x.Type];
+							if(x.UnreadCount > 0)
+								n.Text += " [" + x.UnreadCount + "]"; 
 							return n;
 						}
 					).ToList();
-					Debug.WriteLine((node as TreeNode).Tag.GetType());
+					//Debug.WriteLine((node as TreeNode).Tag.GetType());
 					(node as TreeNode).UpdateFrom(nodes);
 									
 				}
@@ -90,6 +92,7 @@ namespace ETC
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
+			InputBox.KeyUp += InputKeyUp;
 			Data = new ClientData(c);
 			
 			
@@ -185,24 +188,63 @@ namespace ETC
 						qts = CurrentState.qts,
 					};
 					
-					var res = await Data.Client.SendDebugRequestAsync<TLAbsDifference>(req);
-					Debug.WriteLine("Got diff");
+					var res = Data.Client.SendDebugRequestAsync<TLAbsDifference>(req).Result;
 					var diff = DifferenceFactory.FromDifference(res);
+					var st = diff.GetState();
 					
-					var added_conv = Data.AddConversations(diff.GetConversations());
-					
+					var conv = diff.GetConversations();
+					var added_conv = Data.AddConversations(conv);
+					Debug.WriteLine("Got {0} chats ({1} new)",conv.Count,added_conv.Count);
 					var messages = diff.GetMessages();
+					
+					foreach(var cc in conv)
+					{
+						Debug.WriteLine("Ctype : {0} [{1}]",cc.GetType().Name,cc is Channel);
+						if(cc is Channel)
+						{
+							Debug.WriteLine("Getting cdiff");
+							var cdiff = await Data.Client.SendDebugRequestAsync<TLAbsChannelDifference>(
+								new TLRequestGetChannelDifference()
+								{
+									pts = CurrentState.pts,
+									channel = new TLInputChannel()
+									{
+										channel_id = await cc.GetIdAsync(),
+										access_hash = await cc.GetAccessHashAsync(),
+									},
+									filter = new TLChannelMessagesFilterEmpty()
+								}
+							);
+							Debug.WriteLine("Adding messages");
+							messages.AddRange(diff.GetMessages());
+						}
+					}
+					
+					if(st != null)
+						CurrentState = st.Data;
+					
+					Debug.WriteLine("Got " + messages.Count +"Messages");
+					
 					foreach(var msg in messages)
 					{
 						var cid = msg.ConversationId;
-						
+						Debug.WriteLine("Updating conv " + cid.ToString());
 						if(Data.ConvDict.ContainsKey(cid))
 						{
-							Data.ConvDict[cid].UnreadCount++;
-							if(cid == Current.GetIdAsync().Result)
+							Debug.WriteLine("Updating...");
+							try
 							{
-								await msg.PrepareForWritingAsync(Data);
-								this.Invoke(new Action(() => msg.WriteToRichTextBox(ChatBox,Data)));
+								Data.ConvDict[cid].UnreadCount++;
+								if(Current != null && cid == Current.GetIdAsync().Result)
+								{
+									await msg.PrepareForWritingAsync(Data);
+									this.Invoke(new Action(() => msg.WriteToRichTextBox(ChatBox,Data)));
+								}
+							}
+							catch(Exception ex)
+							{
+								Debug.WriteLine(ex.Message);
+								Debug.WriteLine(ex.StackTrace);
 							}
 						}
 						else
@@ -210,12 +252,10 @@ namespace ETC
 							Debug.WriteLine("Cannot find conversation {0} [{1}]",cid,diff.GetHashCode());
 						}
 					}
-					Debug.WriteLine("Getting state");
-					var st = await Data.Client.SendDebugRequestAsync<TLState>(new TLRequestGetState());
-					//lock(m_nodelock)
-						CurrentState = st;
+					
+					//CurrentState = st;
 					Debug.WriteLine("Updating nodes");
-					if(added_conv.Count > 0)
+					if(added_conv.Count > 0 /*|| c_added.Count > 0*/)
 						this.Invoke(new Action(
 							() =>{
 								this.UpdateTree();
@@ -301,17 +341,18 @@ namespace ETC
 				{
 					//lock(TelegramClientExtension.client_lock)
 					{
-						UpdateTimer.Enabled = false;
+						//UpdateTimer.Enabled = false;
+						Debug.WriteLine("Sending");
 						Current.WriteMessageAsync(Data.Client,InputBox.Text).Wait();
 						
-						ChatBox.SelectionFont = new Font(ChatBox.Font,FontStyle.Bold);
+						/*ChatBox.SelectionFont = new Font(ChatBox.Font,FontStyle.Bold);
 						ChatBox.SelectionColor = Color.Green;
 						ChatBox.AppendText("<You> ");
 						ChatBox.SelectionColor = Color.Black;
 						ChatBox.SelectionFont = ChatBox.Font;
-						ChatBox.AppendText(InputBox.Text.Trim() + "\n");
+						ChatBox.AppendText(InputBox.Text.Trim() + "\n");*/
 						InputBox.Text = "";
-						UpdateTimer.Enabled = true;
+						//UpdateTimer.Enabled = true;
 					}
 					
 				}

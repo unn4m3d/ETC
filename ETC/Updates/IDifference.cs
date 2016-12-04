@@ -22,5 +22,6 @@ namespace ETC.Updates
 		List<IUser> GetUsers();
 		List<IMessage> GetMessages();
 		List<IConversation> GetConversations();
+		State GetState();
 	}
 }

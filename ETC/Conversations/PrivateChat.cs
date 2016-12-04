@@ -54,9 +54,23 @@ namespace ETC.Conversations
 			return 1;
 		}
 		
-		public async Task WriteMessageAsync(TelegramClient cli,string message)
+		public async Task WriteMessageAsync(TelegramClient cli,string msg)
 		{
-			await cli.SendMessageAsync(new TLInputPeerUser(){access_hash = m_user.access_hash ?? 0, user_id=m_user.id},message);
+			var peer = new TLInputPeerUser()
+			{
+				user_id = m_user.id,
+				access_hash = await GetAccessHashAsync()
+			};
+			
+			var req = new TLRequestSendMessage()
+			{
+				peer = peer,
+				message = msg,
+				random_id = TLSharp.Core.Utils.Helpers.GenerateRandomLong()
+			};
+			new Task(new Action(() => {
+			                    	cli.SendDebugRequestAsync<object>(req).Wait();
+			                    })).Start();
 		}
 		
 		public async Task<int> GetIdAsync()

@@ -43,5 +43,11 @@ namespace ETC.Updates
 			m_diff = d;
 		}
 
+		public State GetState()
+		{
+			return new State(
+				m_diff.intermediate_state
+			);
+		}
 	}
 }

@@ -24,10 +24,10 @@ namespace ETC
 		public List<IUser> Users
 		{
 			get{
-				return m_users;
+				return UsersDict.Values.ToList<IUser>();
 			}
 			set{
-				m_users = value;
+				//m_users = value;
 				UsersDict = new Dictionary<int, IUser>(){};
 				foreach(var v in value)
 				{
@@ -35,15 +35,13 @@ namespace ETC
 				}
 			}
 		}
-		public List<IConversation> m_conversations;
 		public Dictionary<int,IConversation> ConvDict;
 		public List<IConversation> Conversations
 		{
 			get{
-				return m_conversations;
+				return ConvDict.Values.ToList<IConversation>();
 			}
 			set{
-				m_conversations = value;
 				ConvDict = new Dictionary<int, IConversation>(){};
 				foreach(var c in value)
 				{
@@ -67,7 +65,7 @@ namespace ETC
 				if(!UsersDict.ContainsKey(id))
 				{					
 					UsersDict.Add(id,u);
-					m_users.Add(u);
+					//m_users.Add(u);
 				}
 			}
 		}
@@ -81,7 +79,7 @@ namespace ETC
 				if(!ConvDict.ContainsKey(id))
 				{
 					ConvDict.Add(id,c);
-					m_conversations.Insert(0,c);
+					//m_conversations.Insert(0,c);
 					res.Add(c);
 				}
 			}

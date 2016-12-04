@@ -43,5 +43,10 @@ namespace ETC.Updates
 		{
 			return new List<IConversation>(){};
 		}
+		
+		public State GetState()
+		{
+			return null;
+		}
 	}
 }

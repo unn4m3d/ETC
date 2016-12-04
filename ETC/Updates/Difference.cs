@@ -42,5 +42,10 @@ namespace ETC.Updates
 		{
 			return m_diff.chats.lists.Select(x => ConversationFactory.FromChat(x)).ToList();
 		}
+		
+		public State GetState()
+		{
+			return new State(m_diff.state);
+		}
 	}
 }

@@ -161,11 +161,10 @@ namespace ETC
 			this.InputBox.Name = "InputBox";
 			this.InputBox.Size = new System.Drawing.Size(573, 20);
 			this.InputBox.TabIndex = 1;
-			this.InputBox.KeyUp += InputKeyUp;
 			// 
 			// UpdateTimer
 			// 
-			this.UpdateTimer.Interval = 1000;
+			this.UpdateTimer.Interval = 2000;
 			// 
 			// MainForm
 			// 
