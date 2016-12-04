@@ -23,10 +23,12 @@ namespace ETC.Conversations
 	public class PrivateChat : IConversation
 	{
 		private TLUser m_user;
+		public long UnreadCount{get;set;}
 		
 		public PrivateChat(TLUser user)
 		{
 			m_user = user;
+			UnreadCount = 0L;
 		}
 		
 		public async Task<String> GetTitleAsync(TelegramClient client)

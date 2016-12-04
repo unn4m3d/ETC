@@ -31,6 +31,13 @@ namespace ETC.Messages
 		private String m_text;
 		#endregion
 		
+		public int ConversationId
+		{
+			get{
+				return m_msg.from_id.HasValue ? m_msg.from_id.Value : PeerFactory.FromPeer(m_msg.to_id).Id;
+			}
+		}
+		
 		public Message(TLMessage m)
 		{
 			m_msg = m;

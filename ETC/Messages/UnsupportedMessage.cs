@@ -55,5 +55,10 @@ namespace ETC.Messages
 		{
 			return 0;
 		}
+		
+		public int ConversationId
+		{
+			get{return 0;}
+		}
 	}
 }

@@ -22,14 +22,16 @@ namespace ETC.Conversations
 	public class EmptyChat : UnsupportedChat
 	{
 		private TLChatEmpty m_chat;
+		public long UnreadCount = 0L;
 		public EmptyChat(TLChatEmpty c)
 		{
 			m_chat = c;
+			UnreadCount = 0L;
 		}
 		
 		public override async Task<string> GetTitleAsync(TelegramClient cli)
 		{
-			return "[EMPTY_CHAT " + m_chat.id + "]"; 
+			return "[EMPTY_CHAT]"; 
 		} 
 		
 		public override async Task<int> GetIdAsync()

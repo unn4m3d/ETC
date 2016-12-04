@@ -95,6 +95,16 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TelegramClientExtension.cs" />
+    <Compile Include="TreeNodeCollectionExtension.cs" />
+    <Compile Include="Updates\ChannelDifference.cs" />
+    <Compile Include="Updates\ChannelDifferenceTooLong.cs" />
+    <Compile Include="Updates\Difference.cs" />
+    <Compile Include="Updates\DifferenceFactory.cs" />
+    <Compile Include="Updates\DifferenceSlice.cs" />
+    <Compile Include="Updates\EmptyChannelDifference.cs" />
+    <Compile Include="Updates\EmptyDifference.cs" />
+    <Compile Include="Updates\IDifference.cs" />
+    <Compile Include="Updates\State.cs" />
     <Compile Include="Users\EmptyUser.cs" />
     <Compile Include="Users\IUser.cs" />
     <Compile Include="Users\UnsupportedUser.cs" />
@@ -118,6 +128,7 @@
     <Folder Include="Conversations" />
     <Folder Include="Messages" />
     <Folder Include="Peers" />
+    <Folder Include="Updates" />
     <Folder Include="Users" />
   </ItemGroup>
   <ItemGroup>

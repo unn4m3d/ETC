@@ -36,6 +36,7 @@ namespace ETC
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.MainToolBar = new System.Windows.Forms.ToolStrip();
 			this.TelegramMenu = new System.Windows.Forms.ToolStripDropDownButton();
@@ -47,6 +48,7 @@ namespace ETC
 			this.WindowPanel = new System.Windows.Forms.TableLayoutPanel();
 			this.ChatBox = new System.Windows.Forms.RichTextBox();
 			this.InputBox = new System.Windows.Forms.TextBox();
+			this.UpdateTimer = new System.Windows.Forms.Timer(this.components);
 			this.MainToolBar.SuspendLayout();
 			this.Status.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -153,13 +155,17 @@ namespace ETC
 			// 
 			// InputBox
 			// 
+			this.InputBox.AcceptsReturn = true;
 			this.InputBox.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.InputBox.Location = new System.Drawing.Point(3, 347);
 			this.InputBox.Name = "InputBox";
 			this.InputBox.Size = new System.Drawing.Size(573, 20);
 			this.InputBox.TabIndex = 1;
 			this.InputBox.KeyUp += InputKeyUp;
-			this.InputBox.AcceptsReturn = true;
+			// 
+			// UpdateTimer
+			// 
+			this.UpdateTimer.Interval = 1000;
 			// 
 			// MainForm
 			// 
@@ -184,6 +190,7 @@ namespace ETC
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private System.Windows.Forms.Timer UpdateTimer;
 		private System.Windows.Forms.TextBox InputBox;
 		private System.Windows.Forms.RichTextBox ChatBox;
 		private System.Windows.Forms.TableLayoutPanel WindowPanel;

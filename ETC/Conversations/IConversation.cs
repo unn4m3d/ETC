@@ -30,5 +30,6 @@ namespace ETC.Conversations
 		Task<DateTime> GetLastTimeAsync(TelegramClient cli);
 		Task<List<IMessage>> GetLastMessagesAsync(ClientData cli, int offset,int count);
 		ConversationType Type{get;}
+		long UnreadCount{get;set;}
 	}
 }

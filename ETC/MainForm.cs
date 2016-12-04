@@ -14,15 +14,16 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
 using ETC.Conversations;
 using ETC.Peers;
 using ETC.Users;
 using ETC.Messages;
+using ETC.Updates;
 using TeleSharp.TL;
 using TeleSharp.TL.Auth;
 using TeleSharp.TL.Contacts;
 using TeleSharp.TL.Messages;
+using TeleSharp.TL.Updates;
 using TLSharp.Core;
 
 namespace ETC
@@ -32,10 +33,16 @@ namespace ETC
 	/// </summary>
 	public partial class MainForm : Form
 	{
-		public TelegramClient Client;
-		public TreeNode All;
+		public TreeNode All = new TreeNode("All");
 		public ClientData Data;
 		public IConversation Current;
+		public TreeNode Users = new TreeNode("Users");
+		public TreeNode Groups = new TreeNode("Groups");
+		public TreeNode Supergroups = new TreeNode("Supergroups");
+		public TreeNode Channels = new TreeNode("Channels");
+		public TreeNode Bots = new TreeNode("Bots");
+		public TLState CurrentState;
+		private object m_nodelock = new object();
 		
 		public Dictionary<ConversationType,Color> Colors = new Dictionary<ConversationType, Color>()
 		{
@@ -48,7 +55,34 @@ namespace ETC
 			{ConversationType.Bot, 			Color.Cyan}
 		};
 		
-		public List<IConversation> Conversations = new List<IConversation>(){};
+		//public List<IConversation> Conversations = new List<IConversation>(){};
+		
+		void UpdateTree()
+		{
+			foreach(var node in Chats.Nodes)
+			{
+				Debug.WriteLine("Updating {0} {1}",node.GetType().Name,(node as TreeNode).Text);
+				try
+				{
+					var nodes = Data.Conversations.Select(
+						x => {
+							var n = new TreeNode(x.GetTitleAsync(Data.Client).Result);
+							n.Tag = x; 
+							n.ForeColor = Colors[x.Type];
+							return n;
+						}
+					).ToList();
+					Debug.WriteLine((node as TreeNode).Tag.GetType());
+					(node as TreeNode).UpdateFrom(nodes);
+									
+				}
+				catch(Exception exc)
+				{
+					Debug.WriteLine(exc.Message);
+					Debug.WriteLine(exc.StackTrace);
+				}
+			}
+		}
 		
 		public MainForm(TelegramClient c)
 		{
@@ -56,20 +90,14 @@ namespace ETC
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
-			Client = c;	
 			Data = new ClientData(c);
-			
-			var users = new TreeNode("Users");
-			var groups = new TreeNode("Groups");
-			var supergroups = new TreeNode("Supergroups");
-			var channels = new TreeNode("Channels");
-			var bots = new TreeNode("Bots");
 			
 			
 			var bw = new BackgroundWorker();
 			bw.DoWork += (sender,e) => {
 				try
 				{
+					CurrentState = Data.Client.SendDebugRequestAsync<TLState>(new TLRequestGetState()).Result;
 					var s = sender as BackgroundWorker;
 					s.ReportProgress(0);
 					
@@ -77,14 +105,13 @@ namespace ETC
 					{
 						offset_date = 0,
 						limit = 5000,
-						offset_peer = new TLInputPeerEmpty()
+						offset_peer = new TLInputPeerSelf()
 					};
 					try
 					{
-						var dialogs = Client.SendDebugRequestAsync<TLAbsDialogs>(req).Result;
+						var dialogs = Data.Client.SendDebugRequestAsync<TLAbsDialogs>(req).Result;
 						s.ReportProgress(10);
-						Conversations = ConversationFactory.FromDialogs(dialogs);
-						Data.Conversations = Conversations;
+						Data.Conversations = ConversationFactory.FromDialogs(dialogs);
 						s.ReportProgress(20);
 						Data.Users = UserFactory.FromDialogs(dialogs);
 						s.ReportProgress(30);
@@ -95,43 +122,17 @@ namespace ETC
 						Debug.WriteLine(ex.Message);
 					}
 					
-					
-					for(int i = 0; i < Conversations.Count; i++)
-					{
-						var conv = Conversations[i];
-						var node = new TreeNode(conv.GetTitleAsync(Client).Result);
-						node.Tag = conv;
-						node.ForeColor = Colors[conv.Type];
-						switch(conv.Type)
-						{
-							case ConversationType.Bot:
-								bots.Nodes.Add(node);
-								break;
-							case ConversationType.Channel:
-								channels.Nodes.Add(node);
-								break;
-							case ConversationType.Chat:
-								groups.Nodes.Add(node);
-								break;
-							case ConversationType.Private:
-								users.Nodes.Add(node);
-								break;
-							case ConversationType.Supergroup:
-								supergroups.Nodes.Add(node);
-								break;
-						}
-						s.ReportProgress((90-30)*i/Conversations.Count + 30);
-					}
 					s.ReportProgress(90);
-					bots.Text += " (" + bots.Nodes.Count + ")";
+					Bots.Tag = new Match<TreeNode>(x => (x.Tag as IConversation).Type == ConversationType.Bot);
 					s.ReportProgress(92);
-					channels.Text += " (" + channels.Nodes.Count + ")";
+					Channels.Tag = new Match<TreeNode>(x => (x.Tag as IConversation).Type == ConversationType.Channel);
 					s.ReportProgress(94);
-					groups.Text += " (" + groups.Nodes.Count + ")";
+					Groups.Tag = new Match<TreeNode>(x => (x.Tag as IConversation).Type == ConversationType.Chat);
 					s.ReportProgress(96);
-					users.Text += " (" + users.Nodes.Count + ")";
+					Users.Tag = new Match<TreeNode>(x => (x.Tag as IConversation).Type == ConversationType.Private);
 					s.ReportProgress(98);
-					supergroups.Text += " (" + supergroups.Nodes.Count + ")";
+					Supergroups.Tag = new Match<TreeNode>(x => (x.Tag as IConversation).Type == ConversationType.Supergroup);
+					All.Tag = new Match<TreeNode>(x => true);
 					s.ReportProgress(100);
 				}
 				catch(Exception ex)
@@ -140,6 +141,8 @@ namespace ETC
 					Debug.WriteLine(ex.Message);
 				}
 			};
+			
+			
 			
 			bw.ProgressChanged += (sender,args) => {
 				StatusLabel.Text = "Loading... " + args.ProgressPercentage + "%";
@@ -155,26 +158,82 @@ namespace ETC
 				}
 				else
 				{
-					All = new TreeNode("All (" + Conversations.Count + ")");
-					StatusLabel.Text = "Done";
-					foreach(var conv in Conversations)
-					{
-						var node = new TreeNode(conv.GetTitleAsync(Client).Result);
-						node.Tag = conv;
-						node.ForeColor = Colors[conv.Type];
-						All.Nodes.Add(node);
-					}
+					//All = new TreeNode("All (" + Conversations.Count + ")");
+					
 					Chats.Nodes.Add(All);
-					Chats.Nodes.Add(bots);
-					Chats.Nodes.Add(channels);
-					Chats.Nodes.Add(groups);
-					Chats.Nodes.Add(supergroups);
-					Chats.Nodes.Add(users);
+					Chats.Nodes.Add(Bots);
+					Chats.Nodes.Add(Channels);
+					Chats.Nodes.Add(Groups);
+					Chats.Nodes.Add(Supergroups);
+					Chats.Nodes.Add(Users);
+					UpdateTree();
+					StatusLabel.Text = "Done";
 				}
 				
+				UpdateTimer.Enabled = true;
 			};
 			bw.WorkerReportsProgress = true;
 			bw.RunWorkerAsync();
+			
+			UpdateTimer.Tick += (sender, e) =>
+			{ 
+				var t = new Task(new Action( async() => {
+					var req = new TLRequestGetDifference()
+					{
+						pts = CurrentState.pts,
+						date = CurrentState.date,
+						qts = CurrentState.qts,
+					};
+					
+					var res = await Data.Client.SendDebugRequestAsync<TLAbsDifference>(req);
+					Debug.WriteLine("Got diff");
+					var diff = DifferenceFactory.FromDifference(res);
+					
+					var added_conv = Data.AddConversations(diff.GetConversations());
+					
+					var messages = diff.GetMessages();
+					foreach(var msg in messages)
+					{
+						var cid = msg.ConversationId;
+						
+						if(Data.ConvDict.ContainsKey(cid))
+						{
+							Data.ConvDict[cid].UnreadCount++;
+							if(cid == Current.GetIdAsync().Result)
+							{
+								await msg.PrepareForWritingAsync(Data);
+								this.Invoke(new Action(() => msg.WriteToRichTextBox(ChatBox,Data)));
+							}
+						}
+						else
+						{
+							Debug.WriteLine("Cannot find conversation {0} [{1}]",cid,diff.GetHashCode());
+						}
+					}
+					Debug.WriteLine("Getting state");
+					var st = await Data.Client.SendDebugRequestAsync<TLState>(new TLRequestGetState());
+					//lock(m_nodelock)
+						CurrentState = st;
+					Debug.WriteLine("Updating nodes");
+					if(added_conv.Count > 0)
+						this.Invoke(new Action(
+							() =>{
+								this.UpdateTree();
+					 		}
+						));
+					}));
+				try
+				{
+					t.Start();
+				}
+				catch(Exception ex)
+				{
+					Debug.WriteLine(ex.StackTrace);
+					Debug.WriteLine(ex.Message);
+				}
+			};
+			//UpdateTimer.Start();
+			
 		}
 		
 		void OpenConversation(IConversation conv)
@@ -219,7 +278,7 @@ namespace ETC
 		void LogOutMenuItemClick(object sender, EventArgs e)
 		{
 			Debug.WriteLine("LogOut");
-			Client.SendDebugRequestAsync<TLAbsBool>(new TLRequestLogOut()).Wait();
+			Data.Client.SendDebugRequestAsync<TLAbsBool>(new TLRequestLogOut()).Wait();
 			Application.Exit();
 		}
 		
@@ -234,12 +293,35 @@ namespace ETC
 		
 		void InputKeyUp(object sender, KeyEventArgs e)
 		{
-			Debug.WriteLine("OnKeyUp {0}",e.KeyCode.ToString());
-			if(e.KeyCode == Keys.Return)
+			try
 			{
-				Current.WriteMessageAsync(Client,InputBox.Text).Wait();
-				InputBox.Text = "";
+				Debug.WriteLine("OnKeyUp {0}",e.KeyCode.ToString());
+			
+				if(e.KeyCode == Keys.Return)
+				{
+					//lock(TelegramClientExtension.client_lock)
+					{
+						UpdateTimer.Enabled = false;
+						Current.WriteMessageAsync(Data.Client,InputBox.Text).Wait();
+						
+						ChatBox.SelectionFont = new Font(ChatBox.Font,FontStyle.Bold);
+						ChatBox.SelectionColor = Color.Green;
+						ChatBox.AppendText("<You> ");
+						ChatBox.SelectionColor = Color.Black;
+						ChatBox.SelectionFont = ChatBox.Font;
+						ChatBox.AppendText(InputBox.Text.Trim() + "\n");
+						InputBox.Text = "";
+						UpdateTimer.Enabled = true;
+					}
+					
+				}
+			}
+			catch(Exception ex)	
+			{
+				Debug.WriteLine(ex.Message);
+				Debug.WriteLine(ex.StackTrace);
 			}
 		}
+		
 	}
 }

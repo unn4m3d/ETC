@@ -27,10 +27,12 @@ namespace ETC.Conversations
 	public class Channel : IConversation
 	{
 		private TLChannel m_channel;
+		public long UnreadCount{get;set;}
 		
 		public Channel(TLChannel c)
 		{
 			m_channel = c;
+			UnreadCount = 0L;
 		}
 		
 		public async Task<String> GetTitleAsync(TelegramClient cli)
@@ -56,7 +58,7 @@ namespace ETC.Conversations
 				limit  = 5000
 			};
 			
-			var res = await cli.SendRequestAsync<TLChannelParticipants>(req);
+			var res = await cli.SendDebugRequestAsync<TLChannelParticipants>(req);
 			return res.users.lists.Select(x => UserFactory.FromUser(x)).ToList();
 		}
 		
@@ -82,7 +84,16 @@ namespace ETC.Conversations
 			var peer = new TLInputPeerChannel(){access_hash = hash,channel_id=m_channel.id};
 			Debug.WriteLine("AccessHash is {0} ({1})",hash,m_channel.access_hash);
 			Debug.WriteLine("Message is {0} [{1}]",msg,msg.Length);
-			new Task(new Action(() => cli.SendMessageAsync(peer,msg))).Start();
+			var req = new TLRequestSendMessage()
+			{
+				peer = peer,
+				message = msg,
+				random_id = TLSharp.Core.Utils.Helpers.GenerateRandomLong()
+			};
+			new Task(new Action(() => {
+			                    	cli.SendDebugRequestAsync<TLUpdates>(req);
+			                    })).Start();
+			/**/			
 			//await cli.SendMessageAsync(peer,msg);
 			Debug.WriteLine("After send");
 		}

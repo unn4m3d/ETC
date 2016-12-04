@@ -26,5 +26,6 @@ namespace ETC.Messages
 		Task<IConversation> GetConversationAsync(ClientData cli);
 		int SequenceNumber();
 		Task PrepareForWritingAsync(ClientData cli);
+		int ConversationId{get;}
 	}
 }

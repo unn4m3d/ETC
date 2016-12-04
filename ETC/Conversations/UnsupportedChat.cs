@@ -21,8 +21,12 @@ namespace ETC.Conversations
 	/// </summary>
 	public class UnsupportedChat : IConversation
 	{
+		
+		public long UnreadCount{get;set;}
+		
 		public UnsupportedChat()
 		{
+			UnreadCount = 0L;
 		}
 		
 		public virtual async Task<String> GetTitleAsync(TelegramClient cli)

@@ -27,10 +27,12 @@ namespace ETC.Conversations
 	public class Chat : IConversation
 	{
 		private TLChat m_chat;
+		public long UnreadCount{get;set;}
 		
 		public Chat(TLChat c)
 		{
 			m_chat = c;
+			UnreadCount = 0L;
 		}
 		
 		public async Task<String> GetLinkAsync(TelegramClient cli)
@@ -60,7 +62,7 @@ namespace ETC.Conversations
 					limit  = m_chat.participants_count					
 				};
 				
-				var res = await client.SendRequestAsync<TLChannelParticipants>(req);
+				var res = await client.SendDebugRequestAsync<TLChannelParticipants>(req);
 				users = UserFactory.FromChannelParticipants(res);
 			}
 			catch(Exception e)

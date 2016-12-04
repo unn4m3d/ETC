@@ -35,7 +35,22 @@ namespace ETC
 				}
 			}
 		}
-		public List<IConversation> Conversations;
+		public List<IConversation> m_conversations;
+		public Dictionary<int,IConversation> ConvDict;
+		public List<IConversation> Conversations
+		{
+			get{
+				return m_conversations;
+			}
+			set{
+				m_conversations = value;
+				ConvDict = new Dictionary<int, IConversation>(){};
+				foreach(var c in value)
+				{
+					ConvDict.Add(c.GetIdAsync().Result,c);
+				}
+			}
+		}
 		public Dictionary<int,IUser> UsersDict;
 		public TelegramClient Client;
 		
@@ -55,6 +70,22 @@ namespace ETC
 					m_users.Add(u);
 				}
 			}
+		}
+		
+		public List<IConversation> AddConversations(List<IConversation> conv)
+		{
+			var res = new List<IConversation>(){};
+			foreach(var c in conv)
+			{
+				var id = c.GetIdAsync().Result;
+				if(!ConvDict.ContainsKey(id))
+				{
+					ConvDict.Add(id,c);
+					m_conversations.Insert(0,c);
+					res.Add(c);
+				}
+			}
+			return res;
 		}
 	}
 }

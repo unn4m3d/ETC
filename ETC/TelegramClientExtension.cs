@@ -19,10 +19,33 @@ namespace ETC
 	/// </summary>
 	public static class TelegramClientExtension
 	{
-		public static async Task<T> SendDebugRequestAsync<T>(this TelegramClient c,TLMethod m)
+		internal static object client_lock = new object();
+		public static async Task<T> SendDebugRequestAsync<T>(this TelegramClient c,TLMethod m) where T : class
 		{
 			Debug.WriteLine("Sending request {0} [{1}]",m.GetType().Name,m.Constructor);
-			return await c.SendRequestAsync<T>(m);
+			lock(TelegramClientExtension.client_lock) // TODO: Separate locks for clients
+			{
+				Debug.WriteLine("Entered lock block");
+				try
+				{
+					Debug.WriteLine("Sending...");
+					var r = c.SendRequestAsync<T>(m).Result;
+					Debug.WriteLine("Got response " + r.ToString());
+					return r;
+				}
+				catch(Exception e)
+				{
+					Debug.WriteLine(e.StackTrace);
+					Debug.WriteLine(e.Message);
+					Debug.WriteLine(e.InnerException.ToString());
+					return null;
+				}
+			}
+		}
+		
+		public static string ToString(this TLObject obj)
+		{
+			return obj.Constructor.ToString();
 		}
 	}
 }
